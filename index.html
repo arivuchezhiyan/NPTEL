@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#090d16">
+  <title>NPTEL AI Safety & Alignment - Interactive Quiz & Solution Portal</title>
+  <meta name="description" content="Complete interactive quiz portal for all 12 NPTEL AI Safety assignments with real-time scoring, wrong answer analysis, and detailed explanations.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Background Glow Accents -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Header Navigation -->
+  <header class="navbar" id="appHeader">
+    <div class="nav-container">
+      <div class="brand-group">
+        <div class="brand-badge">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+          <span class="badge-pulse"></span>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">NPTEL AI Safety</h1>
+          <span class="brand-subtitle">Interactive Quiz & Mastery Portal</span>
+        </div>
+      </div>
+
+      <!-- Assignment Selector & Actions -->
+      <div class="nav-actions">
+        <!-- Assignment Dropdown -->
+        <div class="selector-wrapper">
+          <label for="assignmentSelect" class="sr-only">Choose Assignment</label>
+          <div class="custom-select-box">
+            <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+            <select id="assignmentSelect" class="form-select" aria-label="Select Assignment">
+              <!-- Dynamically populated -->
+            </select>
+          </div>
+        </div>
+
+        <!-- Mode Toggle (Quiz vs Instant Study) -->
+        <div class="mode-toggle-group">
+          <button id="modeQuizBtn" class="mode-btn active" title="Take test, then submit for score">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+            <span>Exam</span>
+          </button>
+          <button id="modeStudyBtn" class="mode-btn" title="Instant answer & explanation reveal">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <span>Study</span>
+          </button>
+        </div>
+
+        <!-- Timer / Stopwatch -->
+        <div class="timer-badge" id="timerBox">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="timerDisplay">00:00</span>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="icon-button" aria-label="Toggle Dark/Light Mode" title="Toggle Theme">
+          <svg id="themeIconSun" class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg id="themeIconMoon" class="theme-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+        </button>
+
+        <!-- Drawer Toggle for Mobile -->
+        <button id="drawerToggleBtn" class="icon-button mobile-only" aria-label="Open Question Palette">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sub-Navbar Bar: Progress & Quick Filters -->
+    <div class="sub-navbar">
+      <div class="sub-nav-container">
+        <div class="quiz-info-meta">
+          <span class="info-tag" id="currentAssignmentLabel">Assignment 1 (Week 1)</span>
+          <span class="info-dot">•</span>
+          <span class="info-tag" id="questionCountLabel">12 Questions</span>
+        </div>
+
+        <!-- Progress Bar & Count -->
+        <div class="progress-wrapper">
+          <span class="progress-text" id="progressStatusText">Answered 0 / 12</span>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="progressBarFill" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- View Mode Switcher -->
+        <div class="view-switcher">
+          <button id="viewSheetBtn" class="view-btn active" title="View all questions in a continuous scrollable sheet">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            <span>All Questions</span>
+          </button>
+          <button id="viewFocusBtn" class="view-btn" title="View one question at a time">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+            <span>Focus Card</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main App Layout -->
+  <main class="main-layout" id="mainContainer">
+    <!-- Left Column: Question Content -->
+    <section class="questions-section" id="questionsSection">
+      
+      <!-- Quiz Results Panel (Hidden until submission) -->
+      <div id="resultsCard" class="results-card glass-panel hidden">
+        <div class="results-hero">
+          <div class="results-score-dial">
+            <svg class="dial-svg" viewBox="0 0 120 120">
+              <circle class="dial-bg" cx="60" cy="60" r="52"></circle>
+              <circle class="dial-fill" id="scoreDialCircle" cx="60" cy="60" r="52"></circle>
+            </svg>
+            <div class="dial-text">
+              <span class="dial-percentage" id="scorePercentage">0%</span>
+              <span class="dial-fraction" id="scoreFraction">0 / 0</span>
+            </div>
+          </div>
+          
+          <div class="results-summary-content">
+            <div class="results-badge" id="resultsBadge">Performance Summary</div>
+            <h2 class="results-headline" id="resultsHeadline">Assignment Evaluation Complete!</h2>
+            <p class="results-message" id="resultsMessage">Review your score and see all wrongly answered questions with full explanations below.</p>
+            
+            <div class="results-metrics-grid">
+              <div class="metric-card">
+                <span class="metric-value text-primary" id="metricTotal">12</span>
+                <span class="metric-label">Total Questions</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-value text-success" id="metricCorrect">0</span>
+                <span class="metric-label">Correct</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-value text-danger" id="metricWrong">0</span>
+                <span class="metric-label">Wrong</span>
+              </div>
+              <div class="metric-card">
+                <span class="metric-value text-muted" id="metricUnanswered">0</span>
+                <span class="metric-label">Unanswered</span>
+              </div>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="results-actions">
+              <button id="retakeWrongBtn" class="btn btn-danger-soft">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+                <span>Retry Wrong Questions Only</span>
+              </button>
+              <button id="retakeAllBtn" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                <span>Retake Quiz</span>
+              </button>
+              <button id="printReportBtn" class="btn btn-outline">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                <span>Print / Save PDF</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Bar for Results Breakdown -->
+        <div class="results-filter-bar">
+          <span class="filter-label">Filter Review:</span>
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="wrong" id="filterWrongBtn">
+              <span class="dot dot-wrong"></span>
+              <span>Wrongly Answered (<span id="countWrongTab">0</span>)</span>
+            </button>
+            <button class="filter-tab" data-filter="correct" id="filterCorrectBtn">
+              <span class="dot dot-correct"></span>
+              <span>Correct (<span id="countCorrectTab">0</span>)</span>
+            </button>
+            <button class="filter-tab" data-filter="unanswered" id="filterUnansweredBtn">
+              <span class="dot dot-unanswered"></span>
+              <span>Unanswered (<span id="countUnansweredTab">0</span>)</span>
+            </button>
+            <button class="filter-tab" data-filter="all" id="filterAllBtn">
+              <span>All Questions (<span id="countAllTab">0</span>)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Container for rendered question cards -->
+      <div id="questionsContainer" class="questions-container">
+        <!-- Rendered via JS -->
+      </div>
+
+      <!-- Focused Single Question Navigation Controls (shown in Focus Card mode) -->
+      <div id="focusNavControls" class="focus-nav-bar hidden">
+        <button id="prevQuestionBtn" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          <span>Previous</span>
+        </button>
+        <span class="focus-counter" id="focusCounterDisplay">Question 1 of 12</span>
+        <button id="nextQuestionBtn" class="btn btn-secondary">
+          <span>Next</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+      <!-- Bottom Floating Action Bar for Submission -->
+      <div class="submit-bar glass-panel" id="submitBar">
+        <div class="submit-bar-info">
+          <span class="submit-bar-count" id="submitRemainingText">12 of 12 questions remaining</span>
+          <span class="submit-bar-hint">You can change your answers anytime before submitting</span>
+        </div>
+        <div class="submit-bar-actions">
+          <button id="resetAnswersBtn" class="btn btn-ghost" title="Clear all selections">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+            <span>Reset</span>
+          </button>
+          <button id="submitQuizBtn" class="btn btn-primary btn-glow">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Submit & Score</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column / Sidebar: Question Palette & Navigation -->
+    <aside class="sidebar" id="sidebarDrawer">
+      <div class="sidebar-sticky glass-panel">
+        <div class="sidebar-header">
+          <h3 class="sidebar-title">Question Navigator</h3>
+          <span class="sidebar-badge" id="sidebarAssignBadge">Week 1</span>
+        </div>
+
+        <!-- Legend -->
+        <div class="palette-legend">
+          <div class="legend-item"><span class="legend-dot status-answered"></span>Answered</div>
+          <div class="legend-item"><span class="legend-dot status-unanswered"></span>Unanswered</div>
+          <div class="legend-item"><span class="legend-dot status-flagged"></span>Flagged</div>
+        </div>
+        <div class="palette-legend results-legend hidden" id="resultsLegend">
+          <div class="legend-item"><span class="legend-dot status-correct"></span>Correct</div>
+          <div class="legend-item"><span class="legend-dot status-wrong"></span>Wrong</div>
+        </div>
+
+        <!-- Grid of Question Numbers -->
+        <div class="question-palette-grid" id="questionPaletteGrid">
+          <!-- Dynamically generated buttons 1..N -->
+        </div>
+
+        <!-- Quick Summary Stats -->
+        <div class="palette-summary">
+          <div class="palette-stat">
+            <span class="palette-stat-val" id="statAnsweredCount">0</span>
+            <span class="palette-stat-lbl">Answered</span>
+          </div>
+          <div class="palette-stat">
+            <span class="palette-stat-val" id="statRemainingCount">12</span>
+            <span class="palette-stat-lbl">Remaining</span>
+          </div>
+          <div class="palette-stat">
+            <span class="palette-stat-val" id="statFlaggedCount">0</span>
+            <span class="palette-stat-lbl">Flagged</span>
+          </div>
+        </div>
+
+        <!-- All Assignments Summary Dropdown / Quick Links -->
+        <div class="quick-assignments-list">
+          <div class="quick-assign-title">Quick Week Jump:</div>
+          <div class="week-pills" id="weekPillsContainer">
+            <!-- 1 to 12 buttons -->
+          </div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Confirmation Modal for Submit with Unanswered Questions -->
+  <div id="confirmModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card glass-panel">
+      <div class="modal-header">
+        <div class="modal-icon-warning">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <h3 class="modal-title">Unanswered Questions Remaining</h3>
+      </div>
+      <div class="modal-body">
+        <p id="confirmModalText">You have unanswered questions. Are you sure you want to finish and submit your quiz now?</p>
+      </div>
+      <div class="modal-actions">
+        <button id="modalReviewBtn" class="btn btn-secondary">Review Unanswered</button>
+        <button id="modalSubmitAnywayBtn" class="btn btn-primary">Submit Anyway</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Lightbox Modal -->
+  <div id="imageModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="image-modal-card">
+      <button id="closeImageModalBtn" class="modal-close-btn">&times;</button>
+      <img id="modalEnlargedImage" src="" alt="Enlarged Formula/Diagram">
+      <p id="imageModalCaption" class="image-modal-caption"></p>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="toast hidden"></div>
+
+  <!-- Scripts -->
+  <script src="quiz_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
